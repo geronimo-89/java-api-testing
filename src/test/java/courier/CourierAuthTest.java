@@ -90,8 +90,7 @@ public class CourierAuthTest extends CourierData {
 
     }
 
-    //Тест фейлится, запрос идет очень долго и возвращает 504, поэтому временно впихнула ему таймаут
-    @Test(timeout = 2000)
+    @Test
     @DisplayName("Курьер не может авторизоваться без пароля")
     @Description("Ожидаемый код ответа: 400")
     public void shouldNotAuthWithoutPassword() {

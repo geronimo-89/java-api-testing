@@ -70,7 +70,7 @@ public class CourierClient extends ScooterBaseClient {
         Response response = getSpecForDelete(courierId, false)
                 .when()
                 .delete(COURIER_ID);
-        addToReport(courierId, response);
+        addToReport(response);
         return response
                 .then()
                 .log().all();

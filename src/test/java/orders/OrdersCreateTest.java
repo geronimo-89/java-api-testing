@@ -19,15 +19,15 @@ import static pojo.orders.Order.*;
 
 @RunWith(Parameterized.class)
 @DisplayName("Создание заказа")
-public class OrderPlaceTest {
+public class OrdersCreateTest {
 
     private final List<String> colors;
     Order order;
     OrdersClient client;
     int expectedStatusCode;
-    int orderId;
+    int track;
 
-    public OrderPlaceTest(List<String> colors) {
+    public OrdersCreateTest(List<String> colors) {
         this.colors = colors;
     }
 
@@ -53,20 +53,20 @@ public class OrderPlaceTest {
         client = new OrdersClient();
         order = createRandomWithoutColor();
         order.setColor(colors);
-        ValidatableResponse response = client.placeOrder(order);
+        ValidatableResponse response = client.create(order);
         response
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
                 .body("track", is(notNullValue()));
 
-        orderId = client.getOrderId(response);
+        track = client.getId(response);
     }
 
     @After
     @DisplayName("Удаление тестового заказа")
     public void cleanUp() {
-        client.deleteOrder(orderId)
+        client.cancelOrder(track)
                 .statusCode(200);
     }
 

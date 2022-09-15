@@ -1,11 +1,9 @@
 package client;
 
-import data.DataGenerator;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
-import io.restassured.specification.SpecificationQuerier;
 import pojo.orders.Order;
 
 import static data.DataGenerator.*;
@@ -18,7 +16,7 @@ public class OrdersClient extends ScooterBaseClient {
     public static final String PURPLE = "PURPLE";
 
     @Step("Запрос на создание заказа")
-    public ValidatableResponse placeOrder(Order order) {
+    public ValidatableResponse create(Order order) {
         Response response = getSpec()
                 .and()
                 .body(order)
@@ -31,23 +29,46 @@ public class OrdersClient extends ScooterBaseClient {
     }
 
     @Step("Получение ID заказа")
-    public int getOrderId(ValidatableResponse response) {
+    public int getId(ValidatableResponse response) {
         return response
                 .extract()
                 .path("track");
     }
 
     @Step("Запрос на удаление (отмену) заказа")
-    public ValidatableResponse deleteOrder(int id) {
+    public ValidatableResponse cancelOrder(int track) {
         Response response = getSpec()
-                .pathParam("id", id)
+                .queryParam("track", track)
                 .when()
                 .put(ORDER_CANCEL);
-        addToReport(id, response);
+        addToReport(track, response);
         return response
                 .then()
                 .log().all();
 
+    }
+
+    @Step("Запрос на получение заказа по номеру")
+    public ValidatableResponse getOrder(int track) {
+        Response response = getSpec()
+                .queryParam("t", track)
+                .when()
+                .get(ORDER_TRACK);
+        addToReport(response);
+        return response
+                .then()
+                .log().all();
+    }
+
+    @Step("Запрос на получение заказа без номера")
+    public ValidatableResponse getOrder() {
+        Response response = getSpec()
+                .when()
+                .get(ORDER_TRACK);
+        addToReport(response);
+        return response
+                .then()
+                .log().all();
     }
 
     @Step("Запрос на общее количество заказов")
@@ -93,6 +114,17 @@ public class OrdersClient extends ScooterBaseClient {
                 .log().all();
     }
 
-}
+    @Step("Проверка сообщения ответа (message)")
+    public static String getFindMessage(int statusCode) {
+        switch (statusCode) {
+            case 400:
+                return "Недостаточно данных для поиска";
+            case 404:
+                return "Заказ не найден";
+            default:
+                return "Неизвестный код";
+        }
 
+    }
+}
 

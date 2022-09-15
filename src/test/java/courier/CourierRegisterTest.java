@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import pojo.courier.*;
 
-import static client.CourierClient.getRegisterMessage;
+import static client.CourierClient.*;
 import static client.ScooterBaseClient.*;
 import static pojo.courier.Courier.*;
 import static org.hamcrest.Matchers.*;

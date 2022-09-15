@@ -13,7 +13,7 @@ import pojo.courier.*;
 import static client.CourierClient.getRegisterMessage;
 import static client.ScooterBaseClient.*;
 import static pojo.courier.Courier.*;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @DisplayName("Регистрация курьера")
 public class CourierRegisterTest extends CourierData {
@@ -28,7 +28,7 @@ public class CourierRegisterTest extends CourierData {
     public void setUp() {
 
         client = new CourierClient();
-        courier = createRandom(testPassword, testFirstName);
+        courier = createRandom(testPassword);
     }
 
     @Test
@@ -38,7 +38,7 @@ public class CourierRegisterTest extends CourierData {
 
         expectedStatusCode = 201;
 
-        client.registerNew(courier)
+        client.register(courier)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -53,7 +53,7 @@ public class CourierRegisterTest extends CourierData {
 
         expectedStatusCode = 201;
 
-        client.registerNew(loginPasswordFrom(courier))
+        client.register(loginPasswordFrom(courier))
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -68,12 +68,12 @@ public class CourierRegisterTest extends CourierData {
         expectedStatusCode = 409;
 
         existingCourier = courier;
-        client.registerNew(existingCourier)
+        client.register(existingCourier)
                 .statusCode(201);
 
         courier = createWithExistingLogin(existingCourier);
 
-        client.registerNew(courier)
+        client.register(courier)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -88,7 +88,7 @@ public class CourierRegisterTest extends CourierData {
 
         expectedStatusCode = 400;
 
-        client.registerNew(withoutLoginFrom(courier))
+        client.register(withoutLoginFrom(courier))
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -102,7 +102,7 @@ public class CourierRegisterTest extends CourierData {
 
         expectedStatusCode = 400;
 
-        client.registerNew(withoutPasswordFrom(courier))
+        client.register(withoutPasswordFrom(courier))
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -115,11 +115,11 @@ public class CourierRegisterTest extends CourierData {
 
         if (expectedStatusCode == 201) {
             if (courier != null) {
-                client.deleteCourier(courier)
+                client.delete(client.getCourierId(courier))
                         .statusCode(200);
             }
             if (existingCourier != null) {
-                client.deleteCourier(existingCourier)
+                client.delete(client.getCourierId(existingCourier))
                         .statusCode(200);
             }
         }

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
 
+import static data.DataGenerator.randomCyrillic;
+
 public class Courier {
 
     @Getter
@@ -35,11 +37,11 @@ public class Courier {
     }
 
     @Step("Получение объекта курьера со случайным логином, с паролем и именем")
-    public static Courier createRandom(String password, String firstName) {
+    public static Courier createRandom(String password) {
         Courier courier = new Courier();
         courier.setRandomLogin(12);
         courier.setPassword(password);
-        courier.setFirstName(firstName);
+        courier.setFirstName(randomCyrillic(2, 30, false));
         return courier;
     }
 

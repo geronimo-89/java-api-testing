@@ -18,6 +18,7 @@ public class CourierAuthTest extends CourierData {
     static Courier courier;
     static CourierClient client;
     int expectedStatusCode;
+    static CourierId id;
 
 
     @BeforeClass
@@ -25,9 +26,8 @@ public class CourierAuthTest extends CourierData {
     public static void setUp() {
 
         client = new CourierClient();
-        courier = createRandom(testPassword, testFirstName);
-        client.registerNew(courier)
-                .assertThat()
+        courier = createRandom(testPassword);
+        client.register(courier)
                 .statusCode(201);
     }
 
@@ -67,7 +67,7 @@ public class CourierAuthTest extends CourierData {
 
         expectedStatusCode = 404;
 
-        client.login((createRandom(testPassword, testFirstName)))
+        client.login((createRandom(testPassword)))
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -109,8 +109,9 @@ public class CourierAuthTest extends CourierData {
     @AfterClass
     @Step("Удаление из базы тестового курьера")
     public static void cleanUp() {
-        if (client.getCourierId(courier).getId() != null) {
-            client.deleteCourier(courier)
+        id = client.getCourierId(courier);
+        if (id != null) {
+            client.delete(id)
                     .statusCode(200);
         }
     }

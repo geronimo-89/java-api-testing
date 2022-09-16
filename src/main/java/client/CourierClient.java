@@ -3,13 +3,12 @@ package client;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import io.restassured.specification.RequestSpecification;
 import pojo.courier.Courier;
 import pojo.courier.CourierIdObj;
 
 import static pojo.courier.Courier.loginPasswordFrom;
 
-public class CourierClient extends ScooterBaseClient {
+public class CourierClient extends BaseClient {
 
     @Step("Запрос на регистрацию нового курьера")
     public ValidatableResponse register(Courier courier) {
@@ -53,19 +52,13 @@ public class CourierClient extends ScooterBaseClient {
                 .getId());
     }
 
-    @Step("Спек для удаления курьера")
-    public RequestSpecification getSpecForDelete(CourierIdObj courierIdObj, boolean withId) {
-        if (withId) return getSpec()
-                .pathParam("id", Integer.parseInt(courierIdObj.getId()))
-                .and()
-                .body(courierIdObj);
-        else return getSpec()
-                .pathParam("id", Integer.parseInt(courierIdObj.getId()));
-    }
-
     @Step("Запрос на удаление курьера по объекту CourierId")
     public ValidatableResponse delete(CourierIdObj courierIdObj) {
-        Response response = getSpecForDelete(courierIdObj, true)
+        int id = Integer.parseInt(courierIdObj.getId());
+        Response response = getSpec()
+                .pathParam("id", id)
+                .and()
+                .body(courierIdObj)
                 .when()
                 .delete(COURIER_ID);
         addToReport(courierIdObj, response);
@@ -74,9 +67,11 @@ public class CourierClient extends ScooterBaseClient {
                 .log().all();
     }
 
-        @Step("Запрос на удаление без id в запросе")
-    public ValidatableResponse deleteWithoutId(CourierIdObj courierIdObj) {
-        Response response = getSpecForDelete(courierIdObj, false)
+        @Step("Запрос на удаление без id в теле запроса")
+    public ValidatableResponse deleteWithoutBodyId(CourierIdObj courierIdObj) {
+        int id = Integer.parseInt(courierIdObj.getId());
+        Response response = getSpec()
+                .pathParam("id", id)
                 .when()
                 .delete(COURIER_ID);
         addToReport(response);
@@ -85,42 +80,17 @@ public class CourierClient extends ScooterBaseClient {
                 .log().all();
     }
 
-
-    @Step("Проверка сообщения ответа (message)")
-    public static String getRegisterMessage(int statusCode) {
-        switch (statusCode) {
-            case 400:
-                return "Недостаточно данных для создания учетной записи";
-            case 409:
-                return "Этот логин уже используется. Попробуйте другой.";
-            default:
-                return "Неизвестный код";
-        }
+    @Step("Запрос на удаление без id в пути запроса")
+        public ValidatableResponse deleteWithoutPathId(CourierIdObj courierIdObj) {
+        int id = Integer.parseInt(courierIdObj.getId());
+        Response response = getSpec()
+                .body(courierIdObj)
+                .when()
+                .delete(COURIER_ROOT);
+        addToReport(courierIdObj, response);
+        return response
+                .then()
+                .log().all();
     }
 
-    @Step("Проверка сообщения ответа (message)")
-    public static String getLoginMessage(int statusCode) {
-        switch (statusCode) {
-            case 400:
-                return "Недостаточно данных для входа";
-            case 404:
-                return "Учетная запись не найдена";
-            default:
-                return "Неизвестный код";
-        }
-    }
-
-    //убрать точку в 404
-    @Step("Проверка сообщения ответа (message)")
-    public static String getDeleteMessage(int statusCode) {
-        switch (statusCode) {
-            case 400:
-                return "Недостаточно данных для удаления курьера";
-            case 404:
-                return "Курьера с таким id нет.";
-            default:
-                return "Неизвестный код";
-        }
-
-    }
 }

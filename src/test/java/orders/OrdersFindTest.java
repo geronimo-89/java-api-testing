@@ -8,11 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 import setup.SetUpTests;
 
-import static client.OrdersClient.getFindMessage;
 import static org.hamcrest.Matchers.is;
 
 @DisplayName("Поиск заказа")
 public class OrdersFindTest extends SetUpTests {
+
+    private static final String FIND_400 = "Недостаточно данных для поиска";
+    private static final String FIND_404 = "Заказ не найден";
 
     @Before
     @Step("Создание тестового заказа")
@@ -45,7 +47,7 @@ public class OrdersFindTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getFindMessage(expectedStatusCode)));
+                .body("message", is(FIND_400));
 
     }
 
@@ -62,7 +64,7 @@ public class OrdersFindTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getFindMessage(expectedStatusCode)));
+                .body("message", is(FIND_404));
 
     }
 

@@ -9,13 +9,11 @@ import pojo.orders.Order;
 import static data.DataGenerator.*;
 import static io.restassured.specification.SpecificationQuerier.*;
 
-public class OrdersClient extends ScooterBaseClient {
+public class OrdersClient extends BaseClient {
 
     public static final String BLACK = "BLACK";
     public static final String GREY = "GREY";
     public static final String PURPLE = "PURPLE";
-    public static final String NO_ORDER_ID = "Заказа с таким id не существует";
-    public static final String NO_COURIER_ID = "Курьера с таким id не существует";
 
     @Step("Запрос на создание заказа")
     public ValidatableResponse create(Order order) {
@@ -143,6 +141,38 @@ public class OrdersClient extends ScooterBaseClient {
 
         Response response = spec
                 .when()
+                .put(ORDER_ACCEPT_ORDER);
+
+        addToReport(query(spec).getQueryParams(), response);
+
+        return response
+                .then()
+                .log().all();
+    }
+
+        @Step("Запрос на принятие заказа без Id курьера")
+        public ValidatableResponse acceptNoCourierId(int orderId) {
+        RequestSpecification spec = getSpec()
+                .pathParam("orderId", orderId);
+
+        Response response = spec
+                .when()
+                .put(ORDER_ACCEPT_ORDER);
+
+        addToReport(query(spec).getQueryParams(), response);
+
+        return response
+                .then()
+                .log().all();
+    }
+
+    @Step("Запрос на принятие заказа без Id заказа")
+        public ValidatableResponse acceptNoOrderId(int courierId) {
+        RequestSpecification spec = getSpec()
+                .queryParam("courierId", courierId);
+
+        Response response = spec
+                .when()
                 .put(ORDER_ACCEPT);
 
         addToReport(query(spec).getQueryParams(), response);
@@ -152,28 +182,5 @@ public class OrdersClient extends ScooterBaseClient {
                 .log().all();
     }
 
-    @Step("Проверка сообщения ответа (message)")
-    public static String getFindMessage(int statusCode) {
-        switch (statusCode) {
-            case 400:
-                return "Недостаточно данных для поиска";
-            case 404:
-                return "Заказ не найден";
-            default:
-                return "Неизвестный код";
-        }
-    }
-
-    @Step("Проверка сообщения ответа (message)")
-    public static String getAcceptMessage(int statusCode) {
-        switch (statusCode) {
-            case 400:
-                return "Недостаточно данных для поиска";
-            case 409:
-                return "Этот заказ уже в работе";
-            default:
-                return "Неизвестный код";
-        }
-    }
 
 }

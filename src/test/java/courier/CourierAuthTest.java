@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import setup.SetUpTests;
 
-import static client.CourierClient.getLoginMessage;
 import static data.CourierData.testPassword;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -16,6 +15,9 @@ import static pojo.courier.Courier.*;
 
 @DisplayName("Авторизация курьера")
 public class CourierAuthTest extends SetUpTests {
+
+    private static final String AUTH_400 = "Недостаточно данных для входа";
+    private static final String AUTH_404 = "Учетная запись не найдена";
 
     @Before
     @Step("Создание курьера и клиента для запросов с ним")
@@ -49,7 +51,7 @@ public class CourierAuthTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getLoginMessage(expectedStatusCode)));
+                .body("message", is(AUTH_404));
     }
 
     @Test
@@ -63,7 +65,7 @@ public class CourierAuthTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getLoginMessage(expectedStatusCode)));
+                .body("message", is(AUTH_404));
 
     }
 
@@ -78,7 +80,7 @@ public class CourierAuthTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getLoginMessage(expectedStatusCode)));
+                .body("message", is(AUTH_400));
 
     }
 
@@ -93,14 +95,14 @@ public class CourierAuthTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getLoginMessage(expectedStatusCode)));
+                .body("message", is(AUTH_400));
 
     }
 
     @After
     @Step("Удаление из базы тестовых курьеров")
     public void cleanUp() {
-            cleanUpCourier();
+        cleanUpCourier();
     }
 
 

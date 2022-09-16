@@ -10,14 +10,15 @@ import org.junit.Test;
 import pojo.courier.Courier;
 import setup.SetUpTests;
 
-import static client.CourierClient.getOk;
-import static client.CourierClient.getRegisterMessage;
 import static data.CourierData.testPassword;
 import static org.hamcrest.Matchers.is;
 import static pojo.courier.Courier.*;
 
 @DisplayName("Регистрация курьера")
 public class CourierRegisterTest extends SetUpTests {
+
+    private static final String REGISTER_400 = "Недостаточно данных для создания учетной записи";
+    private static final String REGISTER_409 = "Этот логин уже используется. Попробуйте другой.";
 
     Courier existingCourier;
 
@@ -40,9 +41,8 @@ public class CourierRegisterTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("ok", is(getOk(expectedStatusCode)));
+                .body("ok", is(true));
     }
-
 
     @Test
     @DisplayName("Можно зарегистрировать нового курьера с логином и паролем, без имени")
@@ -55,7 +55,7 @@ public class CourierRegisterTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("ok", is(getOk(expectedStatusCode)));
+                .body("ok", is(true));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class CourierRegisterTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getRegisterMessage(expectedStatusCode)));
+                .body("message", is(REGISTER_409));
 
     }
 
@@ -90,7 +90,7 @@ public class CourierRegisterTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getRegisterMessage(expectedStatusCode)));
+                .body("message", is(REGISTER_400));
     }
 
     @Test
@@ -104,20 +104,21 @@ public class CourierRegisterTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getRegisterMessage(expectedStatusCode)));
+                .body("message", is(REGISTER_400));
     }
 
     @After
     @Step("Удаление из базы тестовых курьеров")
     public void cleanUp() {
 
+        courierIdObj = courierClient.getCourierIdObj(courier);
+
         if (expectedStatusCode == 201) {
             cleanUpCourier();
-            }
-            if (existingCourier != null) {
-                courierClient.delete(courierClient.getCourierIdObj(existingCourier));
-            }
         }
-
+        if (existingCourier != null) {
+            courierClient.delete(courierClient.getCourierIdObj(existingCourier));
+        }
+    }
 
 }

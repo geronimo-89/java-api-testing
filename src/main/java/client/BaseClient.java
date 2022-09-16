@@ -10,7 +10,7 @@ import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
 
-public class ScooterBaseClient extends ScooterConfig {
+public class BaseClient extends ScooterConfig {
 
     static Gson gson;
 
@@ -32,18 +32,6 @@ public class ScooterBaseClient extends ScooterConfig {
     protected static void addToReport(Response response) {
         gson = new GsonBuilder().setPrettyPrinting().create();
         Allure.addAttachment("Ответ", response.prettyPrint());
-    }
-
-
-    @Step("Проверка сообщения ответа (ok)")
-    public static boolean getOk(int statusCode) {
-        switch (statusCode) {
-            case 200:
-            case 201:
-                return true;
-            default:
-                return false;
-        }
     }
 
 }

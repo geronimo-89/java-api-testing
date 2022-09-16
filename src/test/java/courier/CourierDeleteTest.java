@@ -8,12 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 import setup.SetUpTests;
 
-import static client.CourierClient.getDeleteMessage;
-import static client.CourierClient.getOk;
 import static org.hamcrest.Matchers.is;
 
 @DisplayName("Удаление курьера")
 public class CourierDeleteTest extends SetUpTests {
+
+    private static final String DELETE_400 = "Недостаточно данных для удаления курьера";
+    private static final String DELETE_404 = "Курьера с таким id нет";
 
     @Before
     @Step("Создание курьера и клиента для запросов с ним")
@@ -32,7 +33,7 @@ public class CourierDeleteTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("ok", is(getOk(expectedStatusCode)));
+                .body("ok", is(true));
     }
 
     @Test
@@ -49,27 +50,41 @@ public class CourierDeleteTest extends SetUpTests {
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getDeleteMessage(expectedStatusCode)));
+                .body("message", is(DELETE_404));
     }
 
     @Test
-    @DisplayName("Если отправить запрос на удаление курьера без id, вернётся ошибка")
+    @DisplayName("Если отправить запрос на удаление курьера без id в пути, вернётся ошибка")
     @Description("Ожидаемый код ответа: 400")
     public void shouldNotDeleteWithoutId() {
 
         expectedStatusCode = 400;
 
-        courierClient.deleteWithoutId(courierIdObj)
+        courierClient.deleteWithoutPathId(courierIdObj)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
-                .body("message", is(getDeleteMessage(expectedStatusCode)));
+                .body("message", is(DELETE_400));
+    }
+
+    @Test
+    @DisplayName("Если отправить запрос на удаление курьера без id в теле, вернётся ошибка")
+    @Description("Ожидаемый код ответа: 400")
+    public void shouldNotDeleteWithoutBodyId() {
+
+        expectedStatusCode = 400;
+
+        courierClient.deleteWithoutBodyId(courierIdObj)
+                .assertThat()
+                .statusCode(expectedStatusCode)
+                .and()
+                .body("message", is(DELETE_400));
     }
 
     @After
     @Step("Удаление из базы тестовых курьеров")
     public void cleanUp() {
-            cleanUpCourier();
+        cleanUpCourier();
     }
 
 }

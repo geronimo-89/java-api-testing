@@ -1,0 +1,13 @@
+{
+  "firstName": "ФцЦдйУЖёвОАн",
+  "lastName": "ДЦзГжгЧсЖгАлИлщМЪлФ",
+  "address": "Иэ62К4ТРеШЭДНдиь2зё",
+  "metroStation": 160,
+  "phone": "12351688577",
+  "rentTime": 3,
+  "deliveryDate": "2023-08-16",
+  "comment": "ГгЩхщЫЫДЖУК53скрЭЛОю",
+  "color": [
+    "PURPLE"
+  ]
+}

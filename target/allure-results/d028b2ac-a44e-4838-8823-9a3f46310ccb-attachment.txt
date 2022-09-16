@@ -1,0 +1,23 @@
+{
+    "order": {
+        "id": 418,
+        "firstName": "фвафвы",
+        "lastName": "фывафыва",
+        "address": "фвыа 3",
+        "metroStation": "1",
+        "phone": "89880261515",
+        "rentTime": 3,
+        "deliveryDate": "2021-10-07T21:00:00.000Z",
+        "track": 697509,
+        "color": [
+            "BLACK"
+        ],
+        "comment": "фывафвыафыва",
+        "cancelled": false,
+        "finished": false,
+        "inDelivery": false,
+        "createdAt": "2021-10-01T14:01:08.173Z",
+        "updatedAt": "2021-10-01T14:01:08.173Z",
+        "status": 0
+    }
+}

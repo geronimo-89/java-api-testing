@@ -1,0 +1,13 @@
+{
+  "firstName": "йЛЬсч",
+  "lastName": "щЯ",
+  "address": "Цщвю4РихШ",
+  "metroStation": 22,
+  "phone": "37457528417",
+  "rentTime": 3,
+  "deliveryDate": "2022-12-08",
+  "comment": "ЙЗ38мНЁШОмС5сзАЭ56ЩНч0ЕИЫЧкВ6м",
+  "color": [
+    ""
+  ]
+}

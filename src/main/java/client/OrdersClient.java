@@ -14,6 +14,8 @@ public class OrdersClient extends ScooterBaseClient {
     public static final String BLACK = "BLACK";
     public static final String GREY = "GREY";
     public static final String PURPLE = "PURPLE";
+    public static final String NO_ORDER_ID = "Заказа с таким id не существует";
+    public static final String NO_COURIER_ID = "Курьера с таким id не существует";
 
     @Step("Запрос на создание заказа")
     public ValidatableResponse create(Order order) {
@@ -28,11 +30,18 @@ public class OrdersClient extends ScooterBaseClient {
                 .log().all();
     }
 
-    @Step("Получение ID заказа")
-    public int getId(ValidatableResponse response) {
+    @Step("Получение номера трека заказа")
+    public int getTrack(ValidatableResponse response) {
         return response
                 .extract()
                 .path("track");
+    }
+
+    @Step("Получение ID заказа")
+    public int getId(int track) {
+        return getOrder(track)
+                .extract()
+                .path("order.id");
     }
 
     @Step("Запрос на удаление (отмену) заказа")
@@ -45,10 +54,22 @@ public class OrdersClient extends ScooterBaseClient {
         return response
                 .then()
                 .log().all();
+    }
+
+    @Step("Запрос на завершение заказа")
+    public ValidatableResponse finishOrder(int id) {
+        Response response = getSpec()
+                .pathParam("id", id)
+                .when()
+                .put(ORDER_FINISH);
+        addToReport(id, response);
+        return response
+                .then()
+                .log().all();
 
     }
 
-    @Step("Запрос на получение заказа по номеру")
+    @Step("Запрос на получение заказа по номеру трека")
     public ValidatableResponse getOrder(int track) {
         Response response = getSpec()
                 .queryParam("t", track)
@@ -60,7 +81,7 @@ public class OrdersClient extends ScooterBaseClient {
                 .log().all();
     }
 
-    @Step("Запрос на получение заказа без номера")
+    @Step("Запрос на получение заказа без номера трека")
     public ValidatableResponse getOrder() {
         Response response = getSpec()
                 .when()
@@ -82,7 +103,7 @@ public class OrdersClient extends ScooterBaseClient {
     }
 
     @Step("Запрос на получение списка заказов")
-    public ValidatableResponse getOrders() {
+    public ValidatableResponse getAllOrders() {
         Response response = getSpec()
                 .when()
                 .get(ORDERS_ROOT);
@@ -114,6 +135,23 @@ public class OrdersClient extends ScooterBaseClient {
                 .log().all();
     }
 
+    @Step("Запрос на принятие заказа")
+    public ValidatableResponse accept(int orderId, int courierId) {
+        RequestSpecification spec = getSpec()
+                .pathParam("orderId", orderId)
+                .queryParam("courierId", courierId);
+
+        Response response = spec
+                .when()
+                .put(ORDER_ACCEPT);
+
+        addToReport(query(spec).getQueryParams(), response);
+
+        return response
+                .then()
+                .log().all();
+    }
+
     @Step("Проверка сообщения ответа (message)")
     public static String getFindMessage(int statusCode) {
         switch (statusCode) {
@@ -124,7 +162,18 @@ public class OrdersClient extends ScooterBaseClient {
             default:
                 return "Неизвестный код";
         }
-
     }
-}
 
+    @Step("Проверка сообщения ответа (message)")
+    public static String getAcceptMessage(int statusCode) {
+        switch (statusCode) {
+            case 400:
+                return "Недостаточно данных для поиска";
+            case 409:
+                return "Этот заказ уже в работе";
+            default:
+                return "Неизвестный код";
+        }
+    }
+
+}

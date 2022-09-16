@@ -1,34 +1,26 @@
 package courier;
 
-import client.CourierClient;
-import data.CourierData;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
-import org.junit.*;
-import pojo.courier.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import setup.SetUpTests;
 
-import static client.CourierClient.*;
+import static client.CourierClient.getLoginMessage;
+import static data.CourierData.testPassword;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static pojo.courier.Courier.*;
-import static org.hamcrest.Matchers.*;
 
 @DisplayName("Авторизация курьера")
-public class CourierAuthTest extends CourierData {
+public class CourierAuthTest extends SetUpTests {
 
-    static Courier courier;
-    static CourierClient client;
-    int expectedStatusCode;
-    static CourierId id;
-
-
-    @BeforeClass
+    @Before
     @Step("Создание курьера и клиента для запросов с ним")
-    public static void setUp() {
-
-        client = new CourierClient();
-        courier = createRandom(testPassword);
-        client.register(courier)
-                .statusCode(201);
+    public void setUp() {
+        setUpCourier();
     }
 
     @Test
@@ -38,7 +30,7 @@ public class CourierAuthTest extends CourierData {
 
         expectedStatusCode = 200;
 
-        client.login(courier)
+        courierClient.login(courier)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -53,7 +45,7 @@ public class CourierAuthTest extends CourierData {
         expectedStatusCode = 404;
         courier.setRandomPassword(12);
 
-        client.login(courier)
+        courierClient.login(courier)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -67,7 +59,7 @@ public class CourierAuthTest extends CourierData {
 
         expectedStatusCode = 404;
 
-        client.login((createRandom(testPassword)))
+        courierClient.login((createRandom(testPassword)))
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -82,7 +74,7 @@ public class CourierAuthTest extends CourierData {
 
         expectedStatusCode = 400;
 
-        client.login(passwordFrom(courier))
+        courierClient.login(passwordFrom(courier))
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -97,7 +89,7 @@ public class CourierAuthTest extends CourierData {
 
         expectedStatusCode = 400;
 
-        client.login(loginFrom(courier))
+        courierClient.login(loginFrom(courier))
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -105,14 +97,10 @@ public class CourierAuthTest extends CourierData {
 
     }
 
-    @AfterClass
-    @Step("Удаление из базы тестового курьера")
-    public static void cleanUp() {
-        id = client.getCourierId(courier);
-        if (id != null) {
-            client.delete(id)
-                    .statusCode(200);
-        }
+    @After
+    @Step("Удаление из базы тестовых курьеров")
+    public void cleanUp() {
+            cleanUpCourier();
     }
 
 

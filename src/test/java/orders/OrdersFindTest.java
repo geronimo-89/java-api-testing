@@ -1,36 +1,23 @@
 package orders;
 
-import client.OrdersClient;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import pojo.orders.Order;
+import setup.SetUpTests;
 
-import static client.OrdersClient.*;
-import static pojo.orders.Order.*;
-import static org.hamcrest.Matchers.*;
+import static client.OrdersClient.getFindMessage;
+import static org.hamcrest.Matchers.is;
 
 @DisplayName("Поиск заказа")
-public class OrdersFindTest {
-
-    Order order;
-    OrdersClient client;
-    int expectedStatusCode;
-    int track;
+public class OrdersFindTest extends SetUpTests {
 
     @Before
     @Step("Создание тестового заказа")
     public void setUp() {
-        client = new OrdersClient();
-        order = createRandomWithoutColor();
-        ValidatableResponse response = client.create(order);
-        response.statusCode(201);
-        track = client.getId(response);
-
+        setUpOrder();
     }
 
     @Test
@@ -40,7 +27,7 @@ public class OrdersFindTest {
 
         expectedStatusCode = 200;
 
-        client.getOrder(track)
+        ordersClient.getOrder(track)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -54,7 +41,7 @@ public class OrdersFindTest {
 
         expectedStatusCode = 400;
 
-        client.getOrder()
+        ordersClient.getOrder()
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -69,9 +56,9 @@ public class OrdersFindTest {
 
         expectedStatusCode = 404;
 
-        client.cancelOrder(track);
+        ordersClient.cancelOrder(track);
 
-        client.getOrder(track)
+        ordersClient.getOrder(track)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -83,7 +70,6 @@ public class OrdersFindTest {
     @DisplayName("Удаление тестовых заказов")
     public void cleanUp() {
         if (expectedStatusCode != 404)
-            client.cancelOrder(track)
-                    .statusCode(200);
+            cleanUpOrder();
     }
 }

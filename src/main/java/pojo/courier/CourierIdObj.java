@@ -3,16 +3,16 @@ package pojo.courier;
 import lombok.Getter;
 import lombok.Setter;
 
-public class CourierId {
+public class CourierIdObj {
 
     @Getter
     @Setter
     private String id;
 
-    public CourierId(String id) {
+    public CourierIdObj(String id) {
         this.id = id;
     }
 
-    public CourierId() {
+    public CourierIdObj() {
     }
 }

@@ -1,37 +1,24 @@
 package courier;
 
-import client.CourierClient;
-import data.CourierData;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import pojo.courier.Courier;
-import pojo.courier.CourierId;
+import setup.SetUpTests;
 
-import static client.CourierClient.*;
-import static pojo.courier.Courier.*;
-import static org.hamcrest.Matchers.*;
+import static client.CourierClient.getDeleteMessage;
+import static client.CourierClient.getOk;
+import static org.hamcrest.Matchers.is;
 
 @DisplayName("Удаление курьера")
-public class CourierDeleteTest extends CourierData {
-
-    Courier courier;
-    CourierClient client;
-    int expectedStatusCode;
-    CourierId courierId;
-
+public class CourierDeleteTest extends SetUpTests {
 
     @Before
     @Step("Создание курьера и клиента для запросов с ним")
     public void setUp() {
-
-        client = new CourierClient();
-        courier = createRandom(testPassword);
-        client.register(courier)
-                .statusCode(201);
-        courierId = client.getCourierId(courier);
+        setUpCourier();
     }
 
     @Test
@@ -41,7 +28,7 @@ public class CourierDeleteTest extends CourierData {
 
         expectedStatusCode = 200;
 
-        client.delete(courierId)
+        courierClient.delete(courierIdObj)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -55,10 +42,10 @@ public class CourierDeleteTest extends CourierData {
 
         expectedStatusCode = 404;
 
-        client.delete(courierId)
+        courierClient.delete(courierIdObj)
                 .statusCode(200);
 
-        client.delete(courierId)
+        courierClient.delete(courierIdObj)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -66,16 +53,23 @@ public class CourierDeleteTest extends CourierData {
     }
 
     @Test
-    @DisplayName("Eсли отправить запрос на удаление курьера без id, вернётся ошибка")
+    @DisplayName("Если отправить запрос на удаление курьера без id, вернётся ошибка")
     @Description("Ожидаемый код ответа: 400")
     public void shouldNotDeleteWithoutId() {
 
         expectedStatusCode = 400;
 
-        client.deleteWithoutId(courierId)
+        courierClient.deleteWithoutId(courierIdObj)
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
                 .body("message", is(getDeleteMessage(expectedStatusCode)));
     }
+
+    @After
+    @Step("Удаление из базы тестовых курьеров")
+    public void cleanUp() {
+            cleanUpCourier();
+    }
+
 }

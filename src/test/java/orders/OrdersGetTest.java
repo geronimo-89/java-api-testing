@@ -4,25 +4,19 @@ import client.OrdersClient;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collection;
+import setup.SetUpTests;
 
 import static org.hamcrest.Matchers.*;
 
 @DisplayName("Список заказов")
-public class OrdersGetTest {
-
-    OrdersClient client;
-    int expectedStatusCode;
+public class OrdersGetTest extends SetUpTests {
 
     @Before
     @Step("Создание клиента")
     public void setUp() {
-        client = new OrdersClient();
+        ordersClient = new OrdersClient();
     }
 
     @Test
@@ -31,7 +25,7 @@ public class OrdersGetTest {
     public void shouldGetListOfOrders() {
 
         expectedStatusCode = 200;
-        client.getOrders()
+        ordersClient.getAllOrders()
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
@@ -45,7 +39,7 @@ public class OrdersGetTest {
     public void shouldGetListOfOrdersWithPageLimit() {
 
         expectedStatusCode = 200;
-        client.getRandomPageLimitOrders()
+        ordersClient.getRandomPageLimitOrders()
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()

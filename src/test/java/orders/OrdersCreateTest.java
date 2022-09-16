@@ -8,24 +8,21 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import pojo.orders.Order;
+import setup.SetUpTests;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static client.OrdersClient.*;
-import static java.util.Arrays.*;
-import static pojo.orders.Order.*;
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static pojo.orders.Order.createRandomWithoutColor;
 
 @RunWith(Parameterized.class)
 @DisplayName("Создание заказа")
-public class OrdersCreateTest {
+public class OrdersCreateTest extends SetUpTests {
 
     private final List<String> colors;
-    Order order;
-    OrdersClient client;
-    int expectedStatusCode;
-    int track;
 
     public OrdersCreateTest(List<String> colors) {
         this.colors = colors;
@@ -50,26 +47,23 @@ public class OrdersCreateTest {
 
         expectedStatusCode = 201;
 
-        client = new OrdersClient();
+        ordersClient = new OrdersClient();
         order = createRandomWithoutColor();
         order.setColor(colors);
-        ValidatableResponse response = client.create(order);
+        ValidatableResponse response = ordersClient.create(order);
         response
                 .assertThat()
                 .statusCode(expectedStatusCode)
                 .and()
                 .body("track", is(notNullValue()));
 
-        track = client.getId(response);
+        track = ordersClient.getTrack(response);
     }
 
     @After
     @DisplayName("Удаление тестового заказа")
     public void cleanUp() {
-        client.cancelOrder(track)
-                .statusCode(200);
+        cleanUpOrder();
     }
 
 }
-
-

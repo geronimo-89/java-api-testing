@@ -68,17 +68,15 @@ public class CourierDeleteTest extends SetUpTests {
     }
 
     @Test
-    @DisplayName("Если отправить запрос на удаление курьера без id в теле, вернётся ошибка")
-    @Description("Ожидаемый код ответа: 400")
+    @DisplayName("Если отправить запрос на удаление курьера без id в теле, ошибки не будет")
+    @Description("Ожидаемый код ответа: 200")
     public void shouldNotDeleteWithoutBodyId() {
 
-        expectedStatusCode = 400;
+        expectedStatusCode = 200;
 
         courierClient.deleteWithoutBodyId(courierIdObj)
                 .assertThat()
-                .statusCode(expectedStatusCode)
-                .and()
-                .body("message", is(DELETE_400));
+                .statusCode(expectedStatusCode);
     }
 
     @After

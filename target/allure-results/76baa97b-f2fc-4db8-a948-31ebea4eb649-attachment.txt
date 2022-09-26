@@ -1,0 +1,13 @@
+{
+  "firstName": "вЬифЁдвёъсбШЧп",
+  "lastName": "ёГМВЗПвийыРОеХЖёщЕаь",
+  "address": "оВАлны",
+  "metroStation": 215,
+  "phone": "829160963779",
+  "rentTime": 6,
+  "deliveryDate": "2023-05-24",
+  "comment": "Ь4сНчщ5ЛЭЖССЭь7З4А0чещССНчсЩ",
+  "color": [
+    "GREY"
+  ]
+}
